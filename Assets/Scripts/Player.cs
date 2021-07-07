@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public static Player Instance;
+
     [SerializeField] private float originalSpeed;
     private float currentSpeed;
     private Vector2 moveVector;
 
     private Rigidbody rigidbodyReference;
-    
-    private Ball ballReference;
 
     [Space]
     [SerializeField] private Transform ballTransform;
@@ -26,6 +26,21 @@ public class Player : MonoBehaviour
 
     public bool IsKickingTheBall { get; private set; }
 
+    private void Awake ()
+    {
+        if (Instance != null)
+        {
+            if (Instance != this)
+            {
+                Destroy(this);
+            }
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
+
     private void Start ()
     {
         moveVector = new Vector2();
@@ -33,8 +48,8 @@ public class Player : MonoBehaviour
         IsKickingTheBall = false;
 
         rigidbodyReference = GetComponent<Rigidbody>();
-        ballReference = ballTransform.GetComponent<Ball>();
-        ballReference.SetMass(originalBallMass);
+
+        Ball.Instance.SetMass(originalBallMass);
     }
 
     private void Update ()
@@ -49,7 +64,7 @@ public class Player : MonoBehaviour
         if (Input.GetMouseButton(0))
         {
             IsKickingTheBall = true;
-            ballReference.SetMass(kickingBallMass);
+            Ball.Instance.SetMass(kickingBallMass);
 
             Vector3 kickingDirection = (ballTransform.position - this.transform.position).normalized;
             rigidbodyReference.AddForce(kickingDirection * kickForce, ForceMode.Impulse);
@@ -57,7 +72,7 @@ public class Player : MonoBehaviour
             StartCoroutine(TimerRoutine(controlsCooldown, () =>
             {
                 IsKickingTheBall = false;
-                ballReference.SetMass(originalBallMass);
+                Ball.Instance.SetMass(originalBallMass);
             }));
         }
     }
@@ -79,7 +94,7 @@ public class Player : MonoBehaviour
             if (currentSpeed == originalSpeed)
             {
                 currentSpeed = originalSpeed / 2;
-                ballReference.SetSpeed(originalSpeed / 2);
+                Ball.Instance.SetSpeed(originalSpeed / 2);
             }
         }
         else
@@ -87,7 +102,7 @@ public class Player : MonoBehaviour
             if (currentSpeed == originalSpeed / 2)
             {
                 currentSpeed = originalSpeed;
-                ballReference.SetSpeed(0);
+                Ball.Instance.SetSpeed(0);
             }
         }
     }
@@ -107,7 +122,7 @@ public class Player : MonoBehaviour
         }
         else if (Vector3.Distance(this.transform.position, ballTransform.position) > dragDistance)
         {
-            rigidbodyReference.velocity = ballReference.RigidbodyReference.velocity;
+            rigidbodyReference.velocity = Ball.Instance.RigidbodyReference.velocity;
         }
     }
 
