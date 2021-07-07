@@ -1,0 +1,122 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2380980822524177343
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2380980822524177341}
+  - component: {fileID: 2380980822524177342}
+  - component: {fileID: 2380980822524177340}
+  - component: {fileID: 2380980822524177339}
+  m_Layer: 0
+  m_Name: CraneRope
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2380980822524177341
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2380980822524177343}
+  m_LocalRotation: {x: -0, y: 0.9238796, z: -0, w: 0.38268346}
+  m_LocalPosition: {x: 5.38, y: 2.25, z: 5.04}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 135, z: 0}
+--- !u!114 &2380980822524177342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2380980822524177343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 325b217b839086b4ca705834516bc0d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  radius: 0.04
+  radialVertices: 6
+  isLoop: 0
+  material: {fileID: 2100000, guid: 85feedf64f0c16d4182fd4c33e342d2a, type: 2}
+  customMesh: {fileID: 4257529212018882713, guid: dc3ad6005b4f0514982b05eb88b9ed3f,
+    type: 3}
+  customMeshRotation: 90
+  spawnPoints:
+  - x: -0.90364826
+    y: -1.0066781
+    z: -0.25334746
+  - x: 0.41540217
+    y: 1.2825642
+    z: 0.055792063
+  - x: 2.740606
+    y: 1.3110733
+    z: -0.08603875
+  - x: 7.158119
+    y: -1.170293
+    z: 0.14805987
+  simulation:
+    enabled: 1
+    resolution: 10
+    solverIterations: 20
+    massPerMeter: 2
+    stiffness: 1
+    lengthMultiplier: 1
+    energyLoss: 0.01
+    gravityMultiplier: 1
+  collisions:
+    enabled: 1
+    stride: 1
+    friction: 0.2
+    collisionMargin: 0.025
+    ignoreLayers:
+      serializedVersion: 2
+      m_Bits: 4
+--- !u!114 &2380980822524177340
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2380980822524177343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a7e7d57ce57076418f0c040a43f27b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rope: {fileID: 2380980822524177342}
+  ropeLocation: 0
+  automaticallyFindRopeLocation: 0
+  rigidbody: {fileID: 0}
+  localPointOnBody: {x: -0.6, y: 0.6, z: 0}
+  rigidbodyDamping: 0
+  stiffness: 1
+--- !u!114 &2380980822524177339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2380980822524177343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a7e7d57ce57076418f0c040a43f27b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rope: {fileID: 2380980822524177342}
+  ropeLocation: 1
+  automaticallyFindRopeLocation: 0
+  rigidbody: {fileID: 0}
+  localPointOnBody: {x: 0, y: 0.5, z: 0}
+  rigidbodyDamping: 0
+  stiffness: 1
