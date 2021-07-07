@@ -18,12 +18,14 @@ public class Player : MonoBehaviour
 
     [Space]
     [SerializeField] private float kickForce;
-    [SerializeField][Range(0f, 2f)] private float controlsCooldown;
+    [SerializeField] [Range(0f, 1f)] private float kickCooldown;
+    [SerializeField] [Range(0f, 2f)] private float controlsCooldown;
 
     [Space]
     [SerializeField] private float originalBallMass;
     [SerializeField] private float kickingBallMass;
 
+    private bool isAbleToKick;
     public bool IsKickingTheBall { get; private set; }
 
     private void Awake ()
@@ -46,6 +48,7 @@ public class Player : MonoBehaviour
         moveVector = new Vector2();
         currentSpeed = originalSpeed;
         IsKickingTheBall = false;
+        isAbleToKick = true;
 
         rigidbodyReference = GetComponent<Rigidbody>();
 
@@ -61,13 +64,17 @@ public class Player : MonoBehaviour
 
     private void KickTheBall ()
     {
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButtonDown(0) && isAbleToKick)
         {
+            isAbleToKick = false;
+
             IsKickingTheBall = true;
             Ball.Instance.SetMass(kickingBallMass);
 
             Vector3 kickingDirection = (ballTransform.position - this.transform.position).normalized;
             rigidbodyReference.AddForce(kickingDirection * kickForce, ForceMode.Impulse);
+
+            StartCoroutine(TimerRoutine(kickCooldown, () => isAbleToKick = true));
 
             StartCoroutine(TimerRoutine(controlsCooldown, () =>
             {
