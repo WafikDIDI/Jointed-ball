@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    // Singleton
     public static Player Instance;
 
     [SerializeField] private float originalSpeed;
@@ -11,9 +12,8 @@ public class Player : MonoBehaviour
     private Vector2 moveVector;
 
     private Rigidbody rigidbodyReference;
-
+    
     [Space]
-    [SerializeField] private Transform ballTransform;
     [SerializeField] private float dragDistance;
 
     [Space]
@@ -30,6 +30,7 @@ public class Player : MonoBehaviour
 
     private void Awake ()
     {
+        // Singleton Setup
         if (Instance != null)
         {
             if (Instance != this)
@@ -45,6 +46,7 @@ public class Player : MonoBehaviour
 
     private void Start ()
     {
+        // Initializations
         moveVector = new Vector2();
         currentSpeed = originalSpeed;
         IsKickingTheBall = false;
@@ -71,7 +73,7 @@ public class Player : MonoBehaviour
             IsKickingTheBall = true;
             Ball.Instance.SetMass(kickingBallMass);
 
-            Vector3 kickingDirection = (ballTransform.position - this.transform.position).normalized;
+            Vector3 kickingDirection = (Ball.Instance.transform.position - this.transform.position).normalized;
             rigidbodyReference.AddForce(kickingDirection * kickForce, ForceMode.Impulse);
 
             StartCoroutine(TimerRoutine(kickCooldown, () => isAbleToKick = true));
@@ -96,7 +98,7 @@ public class Player : MonoBehaviour
 
     private void DragBall ()
     {
-        if (Vector3.Distance(this.transform.position, ballTransform.position) > dragDistance)
+        if (Vector3.Distance(this.transform.position, Ball.Instance.transform.position) > dragDistance)
         {
             if (currentSpeed == originalSpeed)
             {
@@ -127,9 +129,13 @@ public class Player : MonoBehaviour
             Vector3 moveDirection = new Vector3(moveVector.x, 0, moveVector.y);
             rigidbodyReference.velocity = moveDirection * currentSpeed * Time.deltaTime;
         }
-        else if (Vector3.Distance(this.transform.position, ballTransform.position) > dragDistance)
+        else if (Vector3.Distance(this.transform.position, Ball.Instance.transform.position) > dragDistance)
         {
-            rigidbodyReference.velocity = Ball.Instance.RigidbodyReference.velocity;
+            Vector3 moveDirection = Ball.Instance.transform.position - this.transform.position;
+
+            var speed = Ball.Instance.RigidbodyReference.velocity.magnitude;
+
+            rigidbodyReference.velocity = moveDirection.normalized * speed;
         }
     }
 

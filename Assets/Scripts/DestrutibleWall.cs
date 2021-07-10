@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class DestrutibleWall : MonoBehaviour
 {
@@ -7,12 +6,13 @@ public class DestrutibleWall : MonoBehaviour
 
     private void OnCollisionEnter (Collision collision)
     {
+        // Checks if the ball hit the wall, and if it did plays a VFX and destorys itself
         if (collision.gameObject.CompareTag("Ball"))
         {
             vfxTransform.gameObject.SetActive(true);
             vfxTransform.parent = null;
 
             Destroy(this.gameObject);
-        }   
+        }
     }
 }
