@@ -9,7 +9,9 @@ public class Player : MonoBehaviour
 
     [SerializeField] private float originalSpeed;
     private float currentSpeed;
+
     private Vector2 moveVector;
+    public Vector2 MoveVector => moveVector;
 
     private Rigidbody rigidbodyReference;
     
@@ -27,6 +29,8 @@ public class Player : MonoBehaviour
 
     private bool isAbleToKick;
     public bool IsKickingTheBall { get; private set; }
+
+    [SerializeField] private Animator animator;
 
     private void Awake ()
     {
@@ -62,11 +66,14 @@ public class Player : MonoBehaviour
         KickTheBall();
         MoveInputs();
         DragBall();
+        LookAtTheBall();
     }
 
     private void KickTheBall ()
     {
-        if (Input.GetMouseButtonDown(0) && isAbleToKick)
+        // Kicking the ball if the player is able to
+        // Changing the ball's mass so the player can kicking it, yet couldn't push it around
+        if (Input.GetMouseButtonDown(0) && isAbleToKick && GameManager.Instance.IsGameRunning)
         {
             isAbleToKick = false;
 
@@ -98,6 +105,7 @@ public class Player : MonoBehaviour
 
     private void DragBall ()
     {
+        // If the player is out of the drag distance he drags the ball, by given the ball speed the ball follows
         if (Vector3.Distance(this.transform.position, Ball.Instance.transform.position) > dragDistance)
         {
             if (currentSpeed == originalSpeed)
@@ -116,18 +124,37 @@ public class Player : MonoBehaviour
         }
     }
 
+    void LookAtTheBall ()
+    {
+        var positionToLookAt = new Vector3
+        {
+            x = Ball.Instance.transform.position.x,
+            y = this.transform.position.y,
+            z = Ball.Instance.transform.position.z,
+        };
+
+        this.transform.LookAt(positionToLookAt);
+    }
+
     private void MoveInputs ()
     {
+        // Collecting inputs
         moveVector.x = Input.GetAxisRaw("Horizontal");
         moveVector.y = Input.GetAxisRaw("Vertical");
     }
 
     private void FixedUpdate ()
     {
+        /* If the player isn't kicking the ball, he moves with controls
+           else if he did kick the ball, and it's getting out of his range he follows it (Ball dragging the player) */
         if (IsKickingTheBall == false)
         {
             Vector3 moveDirection = new Vector3(moveVector.x, 0, moveVector.y);
             rigidbodyReference.velocity = moveDirection * currentSpeed * Time.deltaTime;
+
+            // Animate based on inputs
+            animator.SetFloat("Vertical", Instance.MoveVector.x);
+            animator.SetFloat("Horizontal", Instance.MoveVector.y);
         }
         else if (Vector3.Distance(this.transform.position, Ball.Instance.transform.position) > dragDistance)
         {
@@ -136,11 +163,16 @@ public class Player : MonoBehaviour
             var speed = Ball.Instance.RigidbodyReference.velocity.magnitude;
 
             rigidbodyReference.velocity = moveDirection.normalized * speed;
+
+            // Animate to move towards the ball
+            animator.SetFloat("Vertical", 1);
+            animator.SetFloat("Horizontal", 0);
         }
     }
 
     private void OnCollisionStay (Collision collision)
     {
+        // To stop the player just after kicking the ball, looks better, feels better.
         if (collision.gameObject.CompareTag("Ball"))
         {
             rigidbodyReference.velocity = Vector3.zero;

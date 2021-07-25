@@ -15,9 +15,9 @@ public class Ball : MonoBehaviour
 
     [SerializeField] private float bounceForce;
 
-    [Space]
-    [SerializeField] private float noiseMinAngle;
+    [Header("Bounce Force Noise Settings")]
     [SerializeField] private float noiseMaxAngle;
+    [SerializeField] private float noiseMinAngle;
 
     private void Awake ()
     {
