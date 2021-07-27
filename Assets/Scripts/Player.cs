@@ -12,6 +12,7 @@ public class Player : MonoBehaviour
 
     private Vector2 moveVector;
     public Vector2 MoveVector => moveVector;
+    private Vector2 lastMoveVector;
 
     private Rigidbody rigidbodyReference;
     
@@ -30,7 +31,13 @@ public class Player : MonoBehaviour
     private bool isAbleToKick;
     public bool IsKickingTheBall { get; private set; }
 
+    private bool isKickTriggered = false;
+
+    [Space]
     [SerializeField] private Animator animator;
+
+    [Space]
+    [SerializeField] private Joystick joystick; 
 
     private void Awake ()
     {
@@ -73,7 +80,7 @@ public class Player : MonoBehaviour
     {
         // Kicking the ball if the player is able to
         // Changing the ball's mass so the player can kicking it, yet couldn't push it around
-        if (Input.GetMouseButtonDown(0) && isAbleToKick && GameManager.Instance.IsGameRunning)
+        if (isKickTriggered && isAbleToKick && GameManager.Instance.IsGameRunning)
         {
             isAbleToKick = false;
 
@@ -138,9 +145,27 @@ public class Player : MonoBehaviour
 
     private void MoveInputs ()
     {
+        lastMoveVector = moveVector;
+
         // Collecting inputs
-        moveVector.x = Input.GetAxisRaw("Horizontal");
-        moveVector.y = Input.GetAxisRaw("Vertical");
+        moveVector.x = joystick.Horizontal;
+        moveVector.y = joystick.Vertical;
+        
+        CheckIfKickTriggered();
+    }
+
+    // Checks if the player released the joystick if so triggers the kick ball
+    private void CheckIfKickTriggered ()
+    {
+        if ((Mathf.Abs(lastMoveVector.x) > moveVector.x || Mathf.Abs(lastMoveVector.y) > moveVector.y)
+            && moveVector == Vector2.zero)
+        {
+            isKickTriggered = true;
+        }
+        else
+        {
+            isKickTriggered = false;
+        }
     }
 
     private void FixedUpdate ()
