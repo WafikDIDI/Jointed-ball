@@ -1,7 +1,4 @@
 ﻿using DG.Tweening;
-using DG.Tweening.Core;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -57,7 +54,7 @@ public class GameManager : MonoBehaviour
         DOTween.Kill(pauseMenuGroup);
         pauseMenuGroup.DOFade(active ? 1f : 0f, pauseMenuTweenDuration)
             .OnComplete(() => { if (active) Time.timeScale = 0f; });
-        
+
         pauseMenuGroup.interactable = active;
         pauseMenuGroup.blocksRaycasts = active;
     }
@@ -68,10 +65,16 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             IsGameRunning = !IsGameRunning;
-
+        
             // If the game is running, show the UI else hide it. So it's always opposite to IsGameRunning
             TweenPauseMenuUI(!IsGameRunning);
         }
+    }
+
+    public void PauseGameButton ()
+    {
+        TweenPauseMenuUI(true);
+        IsGameRunning = false;
     }
 
     // Used to restart the game. Triggered from the UI restart button.
