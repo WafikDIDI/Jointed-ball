@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DG.Tweening;
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -12,10 +13,9 @@ public class Player : MonoBehaviour
 
     private Vector2 moveVector;
     public Vector2 MoveVector => moveVector;
-    private Vector2 lastMoveVector;
 
     private Rigidbody rigidbodyReference;
-    
+
     [Space]
     [SerializeField] private float dragDistance;
 
@@ -31,13 +31,11 @@ public class Player : MonoBehaviour
     private bool isAbleToKick;
     public bool IsKickingTheBall { get; private set; }
 
-    private bool isKickTriggered = false;
-
     [Space]
     [SerializeField] private Animator animator;
 
     [Space]
-    [SerializeField] private Joystick joystick; 
+    [SerializeField] private Joystick joystick;
 
     private void Awake ()
     {
@@ -66,11 +64,12 @@ public class Player : MonoBehaviour
         rigidbodyReference = GetComponent<Rigidbody>();
 
         Ball.Instance.SetMass(originalBallMass);
+
+        joystick.OnPointerUpCallBack(KickTheBall);
     }
 
     private void Update ()
     {
-        KickTheBall();
         MoveInputs();
         DragBall();
         LookAtTheBall();
@@ -80,7 +79,7 @@ public class Player : MonoBehaviour
     {
         // Kicking the ball if the player is able to
         // Changing the ball's mass so the player can kicking it, yet couldn't push it around
-        if (isKickTriggered && isAbleToKick && GameManager.Instance.IsGameRunning)
+        if (isAbleToKick && GameManager.Instance.IsGameRunning)
         {
             isAbleToKick = false;
 
@@ -90,6 +89,8 @@ public class Player : MonoBehaviour
             Vector3 kickingDirection = (Ball.Instance.transform.position - this.transform.position).normalized;
             rigidbodyReference.AddForce(kickingDirection * kickForce, ForceMode.Impulse);
 
+            var ballRigidbody = Ball.Instance.RigidbodyReference;
+
             StartCoroutine(TimerRoutine(kickCooldown, () => isAbleToKick = true));
 
             StartCoroutine(TimerRoutine(controlsCooldown, () =>
@@ -97,6 +98,13 @@ public class Player : MonoBehaviour
                 IsKickingTheBall = false;
                 Ball.Instance.SetMass(originalBallMass);
             }));
+
+            // This de-accelerate the ball, instead of instant stopping
+            StartCoroutine(TimerRoutine(controlsCooldown / 2, () =>
+             {
+                 DOTween.Kill(ballRigidbody.gameObject);
+                 DOTween.To(() => ballRigidbody.velocity, (vector) => ballRigidbody.velocity = vector, Vector3.zero, kickCooldown / 2);
+             }));
         }
     }
 
@@ -145,27 +153,9 @@ public class Player : MonoBehaviour
 
     private void MoveInputs ()
     {
-        lastMoveVector = moveVector;
-
         // Collecting inputs
         moveVector.x = joystick.Horizontal;
         moveVector.y = joystick.Vertical;
-        
-        CheckIfKickTriggered();
-    }
-
-    // Checks if the player released the joystick if so triggers the kick ball
-    private void CheckIfKickTriggered ()
-    {
-        if ((Mathf.Abs(lastMoveVector.x) > moveVector.x || Mathf.Abs(lastMoveVector.y) > moveVector.y)
-            && moveVector == Vector2.zero)
-        {
-            isKickTriggered = true;
-        }
-        else
-        {
-            isKickTriggered = false;
-        }
     }
 
     private void FixedUpdate ()

@@ -1,23 +1,24 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Ball : MonoBehaviour
 {
     public static Ball Instance;
 
     private float speed;
-    public float Speed => speed; 
+    public float Speed => speed;
 
     private Rigidbody rigidbodyReference;
-    public Rigidbody RigidbodyReference => rigidbodyReference;
+    public Rigidbody RigidbodyReference { get => rigidbodyReference; set => rigidbodyReference = value; }
 
     private Vector3 lastFrameVelocity;
 
     [SerializeField] private float bounceForce;
+    [SerializeField] private float disaccelerationSpeed;
 
     [Header("Bounce Force Noise Settings")]
     [SerializeField] private float noiseMaxAngle;
     [SerializeField] private float noiseMinAngle;
+
 
     private void Awake ()
     {
@@ -51,10 +52,10 @@ public class Ball : MonoBehaviour
     private void FixedUpdate ()
     {
         // Checks if it can be dragged by the player and if it has the speed to do so
+        Vector3 moveDirection = Player.Instance.transform.position - this.transform.position;
+
         if ((speed > 0) && (Player.Instance.IsKickingTheBall == false))
         {
-            Vector3 moveDirection = Player.Instance.transform.position - this.transform.position;
-
             rigidbodyReference.velocity += moveDirection.normalized * speed * Time.deltaTime;
         }
     }

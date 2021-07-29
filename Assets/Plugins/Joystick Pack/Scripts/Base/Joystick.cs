@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -133,7 +134,13 @@ public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
     {
         input = Vector2.zero;
         handle.anchoredPosition = Vector2.zero;
+
+        pointerUpCallBack?.Invoke();
     }
+
+    private Action pointerUpCallBack;
+
+    public void OnPointerUpCallBack (Action action) => pointerUpCallBack = action;
 
     protected Vector2 ScreenPointToAnchoredPosition(Vector2 screenPosition)
     {
